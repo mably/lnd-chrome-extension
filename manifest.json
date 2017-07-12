@@ -1,7 +1,7 @@
 {
 	"name": "LND Chrome Extension",
-	"description": "Makes LN payments to access protected resources and allows LN authentication via message signing",
-	"version": "1.1.1",
+	"description": "Allows web site basic authentication using a Lightning Network payment or message signature.  Requires a running Lnd Web Client.",
+	"version": "1.2.2",
 	"icons": {
 		"16": "assets/icons/bolt-16.png",
 		"24": "assets/icons/bolt-24.png",

@@ -8,6 +8,21 @@ function getParameterByName(name, url) {
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function array2hex(byteArray) {
+	// for each element, we want to get its two-digit hexadecimal representation
+	const hexParts = [];
+	for(let i = 0; i < byteArray.length; i++) {
+		// convert value to hexadecimal
+		const hex = byteArray[i].toString(16);
+		// pad with zeros to length 2
+		const paddedHex = ('00' + hex).slice(-2);
+		// push to array
+		hexParts.push(paddedHex);
+	}
+	// join all the hex values of the elements into a single string
+	return hexParts.join('');
+}
+
 var requestId;
 var paymentRequest;
 
@@ -23,7 +38,8 @@ function validate() {
 		if (xhr.status >= 200 && xhr.status < 300) {
 			var paymentResponse = JSON.parse(xhr.responseText);
 			console.log(paymentResponse);
-			chrome.runtime.sendMessage({ state: "validated", reqid: requestId, proof: "my-payment-proof"}, function (response) {
+			var paymentPreImage = array2hex(paymentResponse.payment_preimage.data);
+			chrome.runtime.sendMessage({ state: "validated", reqid: requestId, proof: paymentPreImage }, function (response) {
 				console.log("validated response", response);
 				window.close();
 			});
