@@ -1,7 +1,7 @@
 {
 	"name": "LND Chrome Extension",
 	"description": "Makes LN payments to access protected resources and allows LN authentication via message signing",
-	"version": "1.0",
+	"version": "1.1.1",
 	"icons": {
 		"16": "assets/icons/bolt-16.png",
 		"24": "assets/icons/bolt-24.png",
