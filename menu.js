@@ -4,9 +4,8 @@ function openSettings () {
 };
 
 function openClient () {
-	var url = localStorage["url"] || "";
 	chrome.windows.create({
-		url: "webclient/lnd.html?endpoint=" + encodeURIComponent(url),
+		url: "webclient/lnd.html",
 		type: "normal",
 		focused: true
 	});
