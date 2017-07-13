@@ -1,19 +1,9 @@
-function getParameterByName(name, url) {
-	if (!url) url = window.location.href;
-	name = name.replace(/[\[\]]/g, "\\$&");
-	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-		results = regex.exec(url);
-	if (!results) return null;
-	if (!results[2]) return '';
-	return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
 var requestId;
 var message;
 var signature;
 
 function validate() {
-	chrome.runtime.sendMessage({ state: "validated", reqid: requestId, proof: signature }, function (response) {
+	chrome.runtime.sendMessage({ state: "validated", reqid: requestId, proof: [ signature, "" ] }, function (response) {
 		console.log("validated response", response);
 		window.close();
 	});

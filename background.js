@@ -4,8 +4,10 @@ var webClientUrl = null;
 var webClientLogin = null;
 var webClientPwd = null;
 
+const LNREALMS_REGEXP = "^ln(payreq|sign|signpayreq):";
+
 function webClientSocketHandshakeListenerFunction (details) {
-	console.log("onBeforeSendHeaders", details);
+	console.log("onBeforeSendHeaders webclient", details);
 	details.requestHeaders.push({
 		name: "Authorization",
 		value: "Basic " + btoa(webClientLogin + ":" + webClientPwd)
@@ -14,9 +16,13 @@ function webClientSocketHandshakeListenerFunction (details) {
 }
 
 function webClientAuthenticateListenerFunction (details, callback) {
-	console.log("onAuthRequired", details);
-	executeCallback = false;
-	callback({ authCredentials: { username: webClientLogin, password: webClientPwd }});
+	console.log("onAuthRequired webclient", details);
+	var re = new RegExp(LNREALMS_REGEXP, "i");
+	if (re.test(details.realm)) { // handled by other listener
+		callback();
+	} else {
+		callback({ authCredentials: { username: webClientLogin, password: webClientPwd }});
+	}
 }
 
 function refreshWebClientContext () {
@@ -51,59 +57,65 @@ async function waitForAuthValidation(requestId, callback) {
 		await sleep(100); // sleep 100 ms
 	}
 	if (lnAuth && lnAuth.proof) {
-		callback({ authCredentials: { username: lnAuth.proof, password: "" }});
+		callback({ authCredentials: { username: lnAuth.proof[0], password: lnAuth.proof[1] }});
 	} else {
 		callback({ cancel: true });
 	}
 }
 
 chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
-	console.log("onAuthRequired", details);
-	var executeCallback = true;
-	if (details.method === "GET") {
+	console.log("onAuthRequired default", details);
+	var re = new RegExp(LNREALMS_REGEXP, "i");
+	if (re.test(details.realm)) {
 		var requestId = details.requestId;
-		var headers = details.responseHeaders;
-		for (var i = 0; headers && i < headers.length; ++i) {
-			if (headers[i].name.toLowerCase() === "www-authenticate") {
-				if (headers[i].value.substr(12, 8).toLowerCase() === "lnpayreq") {
-					lnAuths[requestId] = { requestId: requestId, running: true };
-					var payreq = headers[i].value.substr(21);
-					var url = "payment.html?payreq=" + encodeURIComponent(payreq) + "&request=" + requestId;
-					chrome.windows.create({
-						url: url,
-						type: "panel",
-						width:600,
-						height: 400,
-						left: 300,
-						top: 150,
-						focused: true
-					});
-					executeCallback = false;
-					waitForAuthValidation(requestId, callback);
-					break;
-				} else if (headers[i].value.substr(12, 6).toLowerCase() === "lnsign") {
-					lnAuths[requestId] = { requestId: requestId, running: true };
-					var message = headers[i].value.substr(19);
-					var url = "signature.html?message=" + encodeURIComponent(message) + "&request=" + requestId;
-					chrome.windows.create({
-						url: url,
-						type: "panel",
-						width:600,
-						height: 400,
-						left: 300,
-						top: 150,
-						focused: true
-					});
-					executeCallback = false;
-					waitForAuthValidation(requestId, callback);
-					break;
-				}
-			}
-		}
-		if (executeCallback) {
-			callback();
+		if (details.realm.startsWith("lnpayreq:")) {
+			lnAuths[requestId] = { requestId: requestId, running: true };
+			var payreq = details.realm.substr(9);
+			var url = "payment.html?payreq=" + encodeURIComponent(payreq) + "&request=" + requestId;
+			chrome.windows.create({
+				url: url,
+				type: "popup",
+				width:600,
+				height: 400,
+				left: 300,
+				top: 150,
+				focused: true
+			});
+			waitForAuthValidation(requestId, callback);
+			return;
+		} else if (details.realm.startsWith("lnsign:")) {
+			lnAuths[requestId] = { requestId: requestId, running: true };
+			var message = details.realm.substr(7);
+			var url = "signature.html?message=" + encodeURIComponent(message) + "&request=" + requestId;
+			chrome.windows.create({
+				url: url,
+				type: "popup",
+				width:600,
+				height: 400,
+				left: 300,
+				top: 150,
+				focused: true
+			});
+			waitForAuthValidation(requestId, callback);
+			return;
+		} else if (details.realm.startsWith("lnsignpayreq:")) {
+			lnAuths[requestId] = { requestId: requestId, running: true };
+			var payreq = details.realm.substr(13);
+			var url = "signpayreq.html?payreq=" + encodeURIComponent(payreq) + "&request=" + requestId;
+			chrome.windows.create({
+				url: url,
+				type: "popup",
+				width:600,
+				height: 560,
+				left: 300,
+				top: 150,
+				focused: true
+			});
+			waitForAuthValidation(requestId, callback);
+			return;
 		}
 	}
+	callback();
 }, { urls: [ "*://*/*" ] }, [ "asyncBlocking", "responseHeaders" ]);
 
 chrome.runtime.onMessage.addListener(

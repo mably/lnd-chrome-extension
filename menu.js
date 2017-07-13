@@ -6,7 +6,7 @@ function openSettings () {
 function openClient () {
 	chrome.windows.create({
 		url: "webclient/lnd.html",
-		type: "normal",
+		type: "popup",
 		focused: true
 	});
 	window.close();
