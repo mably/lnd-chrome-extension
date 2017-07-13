@@ -1,7 +1,7 @@
 {
 	"name": "LND Chrome Extension",
 	"description": "Allows web site basic authentication using a Lightning Network payment or message signature.  Requires a running Lnd Web Client.",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"icons": {
 		"16": "assets/icons/bolt-16.png",
 		"24": "assets/icons/bolt-24.png",
@@ -11,6 +11,7 @@
 	},
 	"options_page": "options.html",
 	"permissions": [
+		"contextMenus",
 		"activeTab",
 		"http://*/*",
 		"https://*/*",
@@ -29,7 +30,8 @@
 			"64": "assets/icons/bolt-64.png",
 			"128": "assets/icons/bolt-128.png"
 		},
-		"default_title": "LND Chrome Extension settings"
+		"default_title": "LND Chrome Extension",
+		"default_popup": "menu.html"
 	},
 	"manifest_version": 2
 }

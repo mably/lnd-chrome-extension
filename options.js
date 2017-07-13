@@ -16,6 +16,7 @@ function saveOptions() {
 	localStorage["login"] = login;
 	var pwd = document.getElementById("password").value;
 	localStorage["password"] = pwd;
+	chrome.runtime.sendMessage({ state: "refresh" });
 }
 
 function resetOptions() {
@@ -26,7 +27,7 @@ function resetOptions() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector("#save-button").addEventListener("click", saveOptions);
-  document.querySelector("#reset-button").addEventListener("click", resetOptions);
-  loadOptions();
+	document.querySelector("#save-button").addEventListener("click", saveOptions);
+	document.querySelector("#reset-button").addEventListener("click", resetOptions);
+	loadOptions();
 });
