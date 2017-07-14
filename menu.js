@@ -3,9 +3,9 @@ function openSettings () {
 	window.close();
 };
 
-function openClient () {
+function openClient (endpoint) {
 	chrome.windows.create({
-		url: "webclient/lnd.html",
+		url: "webclient/lnd.html?endpoint=" + encodeURIComponent(endpoint),
 		type: "popup",
 		focused: true
 	});
@@ -24,8 +24,7 @@ angular.module("menuApp", [])
 	menu.clients = localStorage["clients"] ? JSON.parse(localStorage["clients"]) : {};
 
 	menu.openClient = function(client) {
-		localStorage["url"] = client.endpoint;
-		openClient();
+		openClient(client.endpoint);
 	};
 
 });
