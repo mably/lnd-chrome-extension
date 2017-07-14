@@ -1,4 +1,4 @@
-<html>
+<html ng-app="optionsApp">
 <head>
 	<title>LND Chrome Extension settings</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -6,25 +6,51 @@
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
 	<script type="text/javascript" src="assets/js/jquery-3.2.1.slim.min.js"></script>
 	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="assets/js/angular.min.js"></script>
 	<script type="text/javascript" src="options.js"></script>
 </head>
 <body>
 <div class="container">
 	<h1>LND Chrome Extension settings</h1>
-	<div class="form-group">
-		<label for="url">LND web client URL</label>
-		<input type="text" id="url" class="form-control" placeholder="Client URL"/>
+	<div ng-controller="ClientListController as clientList">
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Endpoint</th>
+						<th>Login</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="client in clientList.clients">
+						<td>{{ client.endpoint }}</td>
+						<td>{{ client.login }}</td>
+						<td>
+							<div class="btn-toolbar pull-right">
+								<button type="button" class="btn btn-default btn-sm" title="Edit" aria-label="Edit" ng-click="clientList.editClient(client)"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+								<button type="button" class="btn btn-default btn-sm" title="Close" aria-label="Close" ng-click="clientList.removeClient(client)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="form-group">
+			<label for="url">LND web client URL</label>
+			<input type="text" id="url" ng-model="clientList.endpoint" class="form-control" placeholder="Client URL"/>
+		</div>
+		<div class="form-group">
+			<label for="login">Login</label>
+			<input type="text" id="login" ng-model="clientList.login" class="form-control" placeholder="Login"/>
+		</div>
+		<div class="form-group">
+			<label for="password">Password</label>
+			<input type="password" id="password" ng-model="clientList.password" class="form-control" placeholder="Password"/>
+		</div>
+		<button ng-if="clientList.endpoint" class="btn btn-default" ng-click="clientList.addClient()">Save</button>
+		<button ng-if="!clientList.endpoint" class="btn btn-default" ng-click="clientList.addClient()">Add</button>
 	</div>
-	<div class="form-group">
-		<label for="login">Login</label>
-		<input type="text" id="login" class="form-control" placeholder="Login"/>
-	</div>
-	<div class="form-group">
-		<label for="password">Password</label>
-		<input type="password" id="password" class="form-control" placeholder="Password"/>
-	</div>
-	<button id="save-button" class="btn btn-default">Save</button>
-	<button id="reset-button" class="btn btn-default">Reset</button>
 </div>
 </body>
 </html>

@@ -1,20 +1,30 @@
 <html>
 <head>
-	<title>LND Signature Validation</title>
+	<title>LND Payment and Signature Validation</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
 	<script type="text/javascript" src="assets/js/jquery-3.2.1.slim.min.js"></script>
 	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="utils.js"></script>
-	<script type="text/javascript" src="signature.js"></script>
+	<script type="text/javascript" src="signpayreq.js"></script>
 </head>
 <body>
 <div class="container">
 	<div class="modal-header">
-		<h3 class="modal-title">LND Signature Validation</h3>
+		<h3 class="modal-title">LND Payment and Signature Validation</h3>
 	</div>
 	<div class="modal-body">
+		<dl class="dl-horizontal" style="overflow-wrap: break-word;">
+			<dt>Destination pub key</dt>
+			<dd><span id="payment-pubkey">&nbsp;</span></dd>
+			<dt>Amount in satoshis</dt>
+			<dd><span id="payment-amount">&nbsp;</span></dd>
+			<dt>Payment hash</dt>
+			<dd><span id="payment-hash">&nbsp;</span></dd>
+			<dt>Payment request</dt>
+			<dd><span id="payment-request">&nbsp;</span></dd>
+		</dl>
 		<dl class="dl-horizontal" style="overflow-wrap: break-word;">
 			<dt>Message to sign</dt>
 			<dd><span id="signature-message">&nbsp;</span></dd>

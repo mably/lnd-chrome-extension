@@ -1,17 +1,18 @@
 <html>
 <head>
-	<title>LND Payment Confirmation</title>
+	<title>LND Payment Validation</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
 	<script type="text/javascript" src="assets/js/jquery-3.2.1.slim.min.js"></script>
 	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="utils.js"></script>
 	<script type="text/javascript" src="payment.js"></script>
 </head>
 <body>
 <div class="container">
 	<div class="modal-header">
-		<h3 class="modal-title">LND Payment Confirmation</h3>
+		<h3 class="modal-title">LND Payment Validation</h3>
 	</div>
 	<div class="modal-body">
 		<dl class="dl-horizontal" style="overflow-wrap: break-word;">
@@ -24,6 +25,10 @@
 			<dt>Payment request</dt>
 			<dd><span id="payment-request">&nbsp;</span></dd>
 		</dl>
+		<div class="form-group">
+			<label for="payment-client">LND Web client</label>
+			<select class="form-control" id="webclient-select"></select>
+		</div>
 	</div>
 	<div class="modal-footer">
 		<button id="validate-button" class="btn btn-primary">Validate</button>

@@ -3,10 +3,10 @@ function openSettings () {
 	window.close();
 };
 
-function openClient () {
+function openClient (endpoint) {
 	chrome.windows.create({
-		url: "webclient/lnd.html",
-		type: "normal",
+		url: "webclient/lnd.html?endpoint=" + encodeURIComponent(endpoint),
+		type: "popup",
 		focused: true
 	});
 	window.close();
@@ -14,5 +14,17 @@ function openClient () {
 
 document.addEventListener("DOMContentLoaded", function () {
 	document.querySelector("#menu-settings").addEventListener("click", openSettings);
-	document.querySelector("#menu-client").addEventListener("click", openClient);
+});
+
+angular.module("menuApp", [])
+	.controller("MenuController", function() {
+
+	var menu = this;
+
+	menu.clients = localStorage["clients"] ? JSON.parse(localStorage["clients"]) : {};
+
+	menu.openClient = function(client) {
+		openClient(client.endpoint);
+	};
+
 });
