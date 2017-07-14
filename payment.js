@@ -2,9 +2,10 @@ var requestId;
 var paymentRequest;
 
 function validate() {
-	var url = localStorage["url"] || "";
-	var login = localStorage["login"] || "";
-	var pwd = localStorage["password"] || "";
+	var client = getClient(document.querySelector("#webclient-select").value);
+	var url = client.endpoint || "";
+	var login = client.login || "";
+	var pwd = client.password || "";
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url + "/api/lnd/sendpayment", true);
 	xhr.setRequestHeader("Authorization", "Basic " + window.btoa(login + ":" + pwd));
@@ -41,9 +42,10 @@ function cancel() {
 }
 
 function decodePaymentRequest() {
-	var url = localStorage["url"] || "";
-	var login = localStorage["login"] || "";
-	var pwd = localStorage["password"] || "";
+	var client = getClient(document.querySelector("#webclient-select").value);
+	var url = client.endpoint || "";
+	var login = client.login || "";
+	var pwd = client.password || "";
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url + "/api/lnd/decodepayreq", true);
 	xhr.setRequestHeader("Authorization", "Basic " + window.btoa(login + ":" + pwd));
@@ -65,11 +67,35 @@ function decodePaymentRequest() {
 	xhr.send(JSON.stringify({ payreq: paymentRequest }));
 }
 
+function changeClient() {
+	var clientSelect = document.querySelector("#webclient-select");
+	localStorage["defaultClient"] = clientSelect.value;
+	refreshDialog();
+}
+
+function refreshDialog() {
+	decodePaymentRequest();
+}
+
 function initDialog () {
 	requestId = getParameterByName("request");
 	paymentRequest = getParameterByName("payreq");
 	document.querySelector("#payment-request").innerHTML = paymentRequest;
-	decodePaymentRequest();
+	var clientSelect = document.querySelector("#webclient-select");
+	for (var endpoint in webClients) {
+		if (webClients.hasOwnProperty(endpoint)) {
+			var client = webClients[endpoint];
+			var opt = document.createElement("option");
+			opt.value = client.endpoint;
+			opt.innerHTML = client.endpoint;
+			clientSelect.appendChild(opt);
+		}
+	}
+	clientSelect.value = defaultClient;
+	if ((clientSelect.selectedIndex < 0)  && (clientSelect.length > 0)) {
+		clientSelect[0].selected = true;
+	}
+	refreshDialog();
 }
 
 document.addEventListener("DOMContentLoaded", function () {

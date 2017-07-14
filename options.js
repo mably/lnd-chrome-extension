@@ -1,33 +1,36 @@
-var defaultColor = "blue";
+angular.module("optionsApp", [])
+	.controller("ClientListController", function() {
 
-function loadOptions() {
-	var urlElt = document.getElementById("url");
-	urlElt.value = localStorage["url"] || "";
-	var loginElt = document.getElementById("login");
-	loginElt.value = localStorage["login"] || "";
-	var pwdElt = document.getElementById("password");
-	pwdElt.value = localStorage["password"] || "";
-}
+	var clientList = this;
 
-function saveOptions() {
-	var url = document.getElementById("url").value;
-	localStorage["url"] = url;
-	var login = document.getElementById("login").value;
-	localStorage["login"] = login;
-	var pwd = document.getElementById("password").value;
-	localStorage["password"] = pwd;
-	chrome.runtime.sendMessage({ state: "refresh" });
-}
+	clientList.clients = localStorage["clients"] ? JSON.parse(localStorage["clients"]) : {};
 
-function resetOptions() {
-	localStorage.removeItem("url");
-	localStorage.removeItem("login");
-	localStorage.removeItem("password");
-	location.reload();
-}
+	clientList.removeClient = function(client) {
+		delete clientList.clients[client.endpoint];
+		persistAndRefresh();
+	};
+	
+	clientList.editClient = function(client) {
+		clientList.endpoint = client.endpoint;
+		clientList.login = client.login;
+		clientList.password = client.password;
+	};
 
-document.addEventListener("DOMContentLoaded", function () {
-	document.querySelector("#save-button").addEventListener("click", saveOptions);
-	document.querySelector("#reset-button").addEventListener("click", resetOptions);
-	loadOptions();
+	clientList.addClient = function() {
+		var client = {
+			endpoint: clientList.endpoint,
+			login: clientList.login,
+			password: clientList.password
+		};
+		clientList.clients[client.endpoint] = client;
+		persistAndRefresh();
+		clientList.endpoint = "";
+		clientList.login = "";
+		clientList.password = "";
+	};
+
+	var persistAndRefresh = function () {
+		localStorage["clients"] = JSON.stringify(clientList.clients);
+		chrome.runtime.sendMessage({ state: "refresh" });
+	};
 });

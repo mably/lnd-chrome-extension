@@ -18,9 +18,10 @@ function cancel() {
 }
 
 function signMessage() {
-	var url = localStorage["url"] || "";
-	var login = localStorage["login"] || "";
-	var pwd = localStorage["password"] || "";
+	var client = getClient(document.querySelector("#webclient-select").value);
+	var url = client.endpoint || "";
+	var login = client.login || "";
+	var pwd = client.password || "";
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url + "/api/lnd/signmessage", true);
 	xhr.setRequestHeader("Authorization", "Basic " + window.btoa(login + ":" + pwd));
@@ -41,16 +42,41 @@ function signMessage() {
 	xhr.send(JSON.stringify({ msg: message }));
 }
 
+function changeClient() {
+	var clientSelect = document.querySelector("#webclient-select");
+	localStorage["defaultClient"] = clientSelect.value;
+	refreshDialog();
+}
+
+function refreshDialog() {
+	signMessage();
+}
+
 function initDialog () {
 	requestId = getParameterByName("request");
 	message = getParameterByName("message");
 	document.querySelector("#signature-message").innerHTML = message;
-	signMessage();
+	var clientSelect = document.querySelector("#webclient-select");
+	for (var endpoint in webClients) {
+		if (webClients.hasOwnProperty(endpoint)) {
+			var client = webClients[endpoint];
+			var opt = document.createElement("option");
+			opt.value = client.endpoint;
+			opt.innerHTML = client.endpoint;
+			clientSelect.appendChild(opt);
+		}
+	}
+	clientSelect.value = defaultClient;
+	if ((clientSelect.selectedIndex < 0)  && (clientSelect.length > 0)) {
+		clientSelect[0].selected = true;
+	}
+	refreshDialog();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
 	document.querySelector("#validate-button").addEventListener("click", validate);
 	document.querySelector("#cancel-button").addEventListener("click", cancel);
+	document.querySelector("#webclient-select").addEventListener("change", changeClient);
 	initDialog();
 });
 

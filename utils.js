@@ -1,3 +1,17 @@
+var webClients = localStorage["clients"] ? JSON.parse(localStorage["clients"]) : {};
+var defaultClient = localStorage["defaultClient"] || "";
+
+function getClient(endpoint) {
+	for (var endpointProp in webClients) {
+		if (webClients.hasOwnProperty(endpointProp)) {
+			if (endpointProp === endpoint) {
+				return webClients[endpointProp];
+			}
+		}
+	}
+	return {};
+}
+
 function getParameterByName(name, url) {
 	if (!url) url = window.location.href;
 	name = name.replace(/[\[\]]/g, "\\$&");

@@ -14,5 +14,18 @@ function openClient () {
 
 document.addEventListener("DOMContentLoaded", function () {
 	document.querySelector("#menu-settings").addEventListener("click", openSettings);
-	document.querySelector("#menu-client").addEventListener("click", openClient);
+});
+
+angular.module("menuApp", [])
+	.controller("MenuController", function() {
+
+	var menu = this;
+
+	menu.clients = localStorage["clients"] ? JSON.parse(localStorage["clients"]) : {};
+
+	menu.openClient = function(client) {
+		localStorage["url"] = client.endpoint;
+		openClient();
+	};
+
 });
